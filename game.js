@@ -312,17 +312,135 @@ class area3 extends AdventureScene {
         }
     }
 }
+class area4 extends AdventureScene {
+    constructor() {
+        super("area4", "Prison Area 4");
+    }
+    preload(){
+        this.load.path='./assets/';
+        this.load.image('area4_bg', 'area4_final.jpg');
+        this.load.image('sleep','sleep.jpg');
+        this.load.image('awake','awake.jpg')
+    }
+    onEnter() {
+        this.backgroundColorChang('#FFF');
+        this.bg_final=this.add.image(
+            700,
+            540,
+            'area4_bg'
+        );
+        this.bg_final.setScale(2.5);
+        let door1 = this.add.text(100,600, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area3");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area3');
+            })
+        
+        let monster = this.add.image(1000,500,'sleep')
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("This is the sleeping monster, and the escape door is behind it.");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*You woke it up and had a duel!!!*");
+                monster.setTexture('awake');
+                let flashSprite = this.add.graphics();
+                flashSprite.fillStyle(0xffffff, 1);
+                flashSprite.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+
+                flashSprite.alpha = 1;
+
+                this.tweens.add({
+                    targets: flashSprite,
+                    alpha: 0,
+                    duration: 1500,
+                    onComplete: () => {
+                        flashSprite.destroy();
+                    }
+                });
+                monster.disableInteractive();
+                door1.disableInteractive();
+                let blackSquare = this.add.graphics();
+                setTimeout(() => {
+                    blackSquare.fillStyle(0x000000, 1); 
+                    blackSquare.fillRect(250, 250, this.cameras.main.width/2, this.cameras.main.height/2+200);
+                    if(this.hasItem("sword🗡️")){
+                        let win_text = this.add.text(this.cameras.main.width/4-200,this.cameras.main.height/4+200, "You fought the monster for a long time, \nbut thanks to the weapon you got from\nthe dungeon, you managed to defeat it by \ngiving it the final blow with the weapon.")
+                        .setFontSize(this.s * 2)
+                        let end = this.add.text(this.cameras.main.width/4+200,this.cameras.main.height/4+500, "🔲 Game Finished")
+                            .setFontSize(this.s * 2)
+                            .setInteractive()
+                            .on('pointerover', () => {
+                                this.showMessage("Game Finished, Click Me!!!");
+                            })
+                            .on('pointerdown', () => {
+                                this.gotoScene('outro');
+                            })
+                    } else {
+                        let lose_text = this.add.text(this.cameras.main.width/4-200,this.cameras.main.height/4+200, "You fight the monster all the time, \nbut unfortunately, \nits armor is so hard that you can't \ndo much damage. \nYou eventually exhausted and died.")
+                        .setFontSize(this.s * 2)
+                        let end = this.add.text(this.cameras.main.width/4+200,this.cameras.main.height/4+500, "🔲 Game Finished")
+                            .setFontSize(this.s * 2)
+                            .setInteractive()
+                            .on('pointerover', () => {
+                                this.showMessage("Game Finished, Click Me!!!");
+                            })
+                            .on('pointerdown', () => {
+                                this.gotoScene('outro');
+                            })
+                    }
+                }, 5000);
+                
+                
+            })
+        monster.setScale(0.25);
+    }
+}
 
 class Intro extends Phaser.Scene {
     constructor() {
         super('intro')
     }
-    create() {
-        this.add.text(50,50, "Adventure awaits!").setFontSize(50);
-        this.add.text(50,100, "Click anywhere to begin.").setFontSize(20);
-        this.input.on('pointerdown', () => {
-            this.cameras.main.fade(1000, 0,0,0);
-            this.time.delayedCall(1000, () => this.scene.start('demo1'));
+    preload(){
+        this.load.path='./assets/';
+        this.load.image('logoi', 'logo_image.png');
+    }
+    create(){
+        
+        this.imageObject=this.add.image(
+            960,
+            540,
+            'logoi'
+        )
+        this.imageObject.setScale(1);
+
+        this.tweens.add({
+            targets: this.imageObject,
+            alpha: { from: 0, to: 1 },
+            duration: 2000,
+            ease: "linear",
+            onComplete:()=>{
+                let text = this.add.text(1920,300, "Game background:\nYou have been falsely accused of \npoisoning food and imprisoned, and \nyou need to find a way to escape.").setFontSize(30);
+                
+                this.tweens.add({
+                    targets: text,
+                    x: 1250,
+                    duration: 2000,
+                    ease: 'Power2',
+                });
+                setTimeout(() => {
+                    this.add.text(700,800, "Click anywhere to begin.").setFontSize(40);
+                    this.input.on('pointerdown', () => {
+                        this.cameras.main.fade(1000, 0,0,0);
+                        this.time.delayedCall(1000, () => this.scene.start('start_room'));
+                    });
+                }, 3000);
+            },
         });
     }
 }
@@ -332,8 +450,8 @@ class Outro extends Phaser.Scene {
         super('outro');
     }
     create() {
-        this.add.text(50, 50, "That's all!").setFontSize(50);
-        this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
+        this.add.text(50, 50, "That's all! Thanks for playing").setFontSize(50);
+        this.add.text(50, 100, "Click anywhere to restart from the intro.").setFontSize(20);
         this.input.on('pointerdown', () => this.scene.start('intro'));
     }
 }
@@ -346,7 +464,6 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [Intro, Demo1, Demo2, Outro],
+    scene: [Intro, start_room, area1, area2, area3, area4, Outro],
     title: "Adventure Game",
 });
-
