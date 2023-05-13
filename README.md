@@ -4,7 +4,7 @@ Code requirements:
 - **4+ scenes based on `AdventureScene`**: start_room, area1, area2, area3, and area4
 - **2+ scenes *not* based on `AdventureScene`**: Intro, Loading_Screen, and Outro
 - **2+ methods or other enhancement added to the adventure game engine to simplify my scenes**:
-    - Enhancement 1: 
+    - Enhancement 1: The showMessage method was used to give descriptions of the named objects. (A description or a way to use it)
     - Enhancement 2: I created a backgroundColorChang method and was used to change the main screen background color.(Was default to black but in some scene I want it to be white because my background doesn't fit the IO)
 
 Experience requirements:
