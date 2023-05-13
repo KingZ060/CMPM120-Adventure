@@ -452,6 +452,7 @@ class Outro extends Phaser.Scene {
     create() {
         this.add.text(50, 50, "That's all! Thanks for playing").setFontSize(50);
         this.add.text(50, 100, "Click anywhere to restart from the intro.").setFontSize(20);
+        gameData.unlock=0;
         this.input.on('pointerdown', () => this.scene.start('intro'));
     }
 }
