@@ -1,94 +1,152 @@
-class Demo1 extends AdventureScene {
+let gameData = {
+    stone_unlock: 0,
+    unlock: 0,
+  };
+
+class start_room extends AdventureScene {
     constructor() {
-        super("demo1", "First Room");
+        super("start_room", "Prison Room");
     }
-
+    preload(){
+        this.load.path='./assets/';
+        this.load.image('prisonbg', 'prison.jpg');
+        this.load.image('door','door.jpg')
+    }
     onEnter() {
-
-        let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerover', () => this.showMessage("Metal, bent."))
-            .on('pointerdown', () => {
-                this.showMessage("No touching!");
-                this.tweens.add({
-                    targets: clip,
-                    x: '+=' + this.s,
-                    repeat: 2,
-                    yoyo: true,
-                    ease: 'Sine.inOut',
-                    duration: 100
-                });
-            });
-
-        let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 key")
+        this.bg=this.add.image(
+            560,
+            540,
+            'prisonbg'
+        );
+        this.bg.setScale(3.5);
+        if (this.hasItem("book📘")) {
+            let door = this.add.text(1250,700, "🚪 \nUnlocked \nDoor")
             .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage("It's a nice key.")
+                this.showMessage("Door to the prison area1");
             })
             .on('pointerdown', () => {
-                this.showMessage("You pick up the key.");
-                this.gainItem('key');
-                this.tweens.add({
-                    targets: key,
-                    y: `-=${2 * this.s}`,
-                    alpha: { from: 1, to: 0 },
-                    duration: 500,
-                    onComplete: () => key.destroy()
-                });
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area1');
             })
-
-        let door = this.add.text(this.w * 0.1, this.w * 0.15, "🚪 locked door")
+        }
+        else{
+            let door = this.add.text(1250,700, "🚪 \nLocked \nDoor")
             .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                if (this.hasItem("key")) {
-                    this.showMessage("You've got the key for this door.");
+                if (this.hasItem("book📘")) {
+                    this.showMessage("You look at the lock and see that \nyou can break it easily with your newly learned skills.");
                 } else {
-                    this.showMessage("It's locked. Can you find a key?");
+                    this.showMessage("This is a door with a simple lock.");
                 }
             })
             .on('pointerdown', () => {
-                if (this.hasItem("key")) {
-                    this.loseItem("key");
-                    this.showMessage("*squeak*");
-                    door.setText("🚪 unlocked door");
-                    this.gotoScene('demo2');
+                if (this.hasItem("book📘")) {
+                    this.showMessage("*Click......*");
+                    door.setText("🚪 \nUnlocked \ndoor");
+                    setTimeout(() => {
+                        this.gotoScene('area1');
+                    }, 1000);
+                } else {
+                    this.tweens.add({
+                        targets: door,
+                        x: '+=' + this.s,
+                        repeat: 2,
+                        yoyo: true,
+                        ease: 'Sine.inOut',
+                        duration: 100
+                    });
                 }
             })
-
+        }
+        let book = this.add.text(this.w * 0.2, this.w * 0.05, "📘 skill book")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            if (this.hasItem("book📘")) {
+                book.destroy()
+            } else{
+                book.on('pointerover', () => {
+                    this.showMessage("This is a skill book, you can learn lockpicking skills after you get it.")
+                })
+                .on('pointerdown', () => {
+                    this.showMessage("You got the book and learned the simple lockpicking skills to pick a lock.");
+                    this.gainItem('book📘');
+                    this.tweens.add({
+                        targets: book,
+                        y: `-=${2 * this.s}`,
+                        alpha: { from: 1, to: 0 },
+                        duration: 500,
+                        onComplete: () => book.destroy()
+                    });
+                })
+            }
     }
 }
 
-class Demo2 extends AdventureScene {
+class area1 extends AdventureScene {
     constructor() {
-        super("demo2", "The second room has a long name (it truly does).");
+        super("area1", "Prison Area 1");
     }
+    preload(){
+        this.load.path='./assets/';
+        this.load.image('bg', 'bg.png');
+    }
+    
     onEnter() {
-        this.add.text(this.w * 0.3, this.w * 0.4, "just go back")
+        this.backgroundColorChang('#FFF');
+        this.bg_big=this.add.image(
+            540,
+            540,
+            'bg'
+        );
+        this.bg_big.setScale(2.5);
+
+        let door1 = this.add.text(1250,550, "🚪 \nOpened \nDoor")
             .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage("You've got no other choice, really.");
+                this.showMessage("Door back to the prison cell");
             })
             .on('pointerdown', () => {
-                this.gotoScene('demo1');
-            });
+                this.showMessage("*Walked over......*");
+                this.gotoScene('start_room');
+            })
 
-        let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
+        let door2 = this.add.text(150,550, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage('*giggles*');
-                this.tweens.add({
-                    targets: finish,
-                    x: this.s + (this.h - 2 * this.s) * Math.random(),
-                    y: this.s + (this.h - 2 * this.s) * Math.random(),
-                    ease: 'Sine.inOut',
-                    duration: 500
-                });
+                this.showMessage("Door to the prison area2");
             })
-            .on('pointerdown', () => this.gotoScene('outro'));
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area2');
+            })
+
+        let door3 = this.add.text(400,750, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area3");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area3');
+            })
+
+        // let rock = this.add.text(1300, 200, "🪨🪨\n🪨🪨")
+        //     .setFontSize(this.s * 1)
+        //     .setInteractive()
+        // this.tweens.add({
+        //         targets: rock,
+        //         x: '+=20', // Move the text by 20 pixels to the right
+        //         repeat: -1, // Repeat the animation indefinitely
+        //         yoyo: true, // Play the animation in reverse as well
+        //         ease: 'Sine.easeInOut', // Specify the easing function for smooth motion
+        //         duration: 500, // Duration of each movement phase (500 milliseconds in this example)
+        // });
     }
 }
 
