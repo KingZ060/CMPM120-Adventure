@@ -150,6 +150,169 @@ class area1 extends AdventureScene {
     }
 }
 
+class area2 extends AdventureScene {
+    constructor() {
+        super("area2", "Prison Area 2");
+    }
+    preload(){
+        this.load.path='./assets/';
+        this.load.image('area2_bg', 'sword_bg.jpg');
+        this.load.image('sword', 'sword.png');
+    }
+    
+    onEnter() {
+        this.backgroundColorChang('#FFF');
+        this.sword_bg=this.add.image(
+            700,
+            540,
+            'area2_bg'
+        );
+        this.sword_bg.setScale(2.5);
+
+        let door1 = this.add.text(1200,550, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area1");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area1');
+            })
+        let door2 = this.add.text(800,950, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area3");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area3');
+            })
+        this.sword=this.add.image(
+            600,
+            600,
+            'sword'
+        );
+        this.sword.setScale(1);
+        this.sword.setInteractive();
+        if (this.hasItem("sword🗡️")) {
+            this.sword.destroy()
+        } else {
+            this.sword.on('pointerover', () => {
+                this.showMessage("This is a sealed sword, click to get it.");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Pickedup");
+                this.gainItem('sword🗡️');
+                this.sword.destroy();
+            })
+        }
+    }
+}
+
+class area3 extends AdventureScene {
+    constructor() {
+        super("area3", "Prison Area 3");
+        
+    }
+    preload(){
+        this.load.path='./assets/';
+        this.load.image('area3_bg', 'bg.png');
+    }
+    onEnter() {
+        this.backgroundColorChang('#FFF');
+        this.bg_big=this.add.image(
+            540,
+            540,
+            'area3_bg'
+        );
+        this.bg_big.setScale(2.5);
+
+        let key = this.add.text(this.w * 0.2, this.w * 0.15, "🔑 key")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .setStyle({ color: '#FFD700' });
+            if (this.hasItem("key🔑")) {
+                key.destroy()
+            } else{
+                key.on('pointerover', () => {
+                    this.showMessage("This is the key for a Locked Door.")
+                    this.tweens.add({
+                        targets: key,
+                        x: this.s + (this.h - 2 * this.s) * Math.random(),
+                        y: this.s + (this.h - 2 * this.s) * Math.random(),
+                        ease: 'Sine.inOut',
+                        duration: 500
+                    });
+                })
+                .on('pointerdown', () => {
+                    this.showMessage("You got the key.");
+                    this.gainItem('key🔑');
+                    this.tweens.add({
+                        targets: key,
+                        y: `-=${2 * this.s}`,
+                        alpha: { from: 1, to: 0 },
+                        duration: 500,
+                        onComplete: () => key.destroy()
+                    });
+                })
+            }
+
+        let door1 = this.add.text(100,200, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area2");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area2');
+            })
+        let door2 = this.add.text(1250,200, "🚪 \nOpened \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area1");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("*Walked over......*");
+                this.gotoScene('area1');
+            })
+        let door3 = this.add.text(1250,750, "🚪 \nLocked \nDoor")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Door to the prison area4, but is locked and you can't pick it!");
+            })
+            .on('pointerdown', () => {
+                if(this.hasItem("key🔑")){
+                    this.showMessage("*Click......*");
+                    gameData.unlock=1
+                    setTimeout(() => {
+                        this.gotoScene('area4');
+                    }, 1000);
+                } else {
+                    this.tweens.add({
+                        targets: door3,
+                        x: '+=' + this.s,
+                        repeat: 2,
+                        yoyo: true,
+                        ease: 'Sine.inOut',
+                        duration: 100
+                    });
+                }
+            })
+        if(gameData.unlock == 1){
+            door3.setText("🚪 \nUnlocked \ndoor");
+            door3.on('pointerover', () => {
+                this.showMessage("Door to the prison area4(unlocked!)");
+
+            })
+        }
+    }
+}
+
 class Intro extends Phaser.Scene {
     constructor() {
         super('intro')
